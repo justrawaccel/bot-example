@@ -1,4 +1,4 @@
-import type { ChatInputCommandInteraction } from "discord.js";
+import { MessageFlags, type ChatInputCommandInteraction } from "discord.js";
 import type { AppContext } from "./context";
 import type { Command } from "./types";
 
@@ -20,7 +20,10 @@ export class CommandRegistry {
   async execute(i: ChatInputCommandInteraction, ctx: AppContext) {
     const cmd = this.map.get(i.commandName);
     if (!cmd) {
-      await i.reply({ content: "Unknown command.", ephemeral: true });
+      await i.reply({
+        content: "Unknown command.",
+        flags: [MessageFlags.Ephemeral],
+      });
       return;
     }
 

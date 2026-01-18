@@ -4,6 +4,8 @@ import { EventBus } from "./event-bus";
 import type { AppContext } from "./context";
 import { initOrm } from "../shared/db/orm";
 import { CommandRegistry } from "./command-registry";
+import { ComponentRegistry } from "./component-registry";
+import { AutocompleteRegistry } from "./autocomplete-registry";
 import { buildModules, initModules, disposeModules } from "./modules";
 import {
   createDiscordClient,
@@ -16,7 +18,9 @@ import { Events } from "discord.js";
 
 export const createApp = () => {
   const modules = buildModules();
-  const registry = new CommandRegistry();
+  const commandRegistry = new CommandRegistry();
+  const componentRegistry = new ComponentRegistry();
+  const autocompleteRegistry = new AutocompleteRegistry();
 
   return {
     async start() {
@@ -37,12 +41,46 @@ export const createApp = () => {
       };
 
       for (const m of modules) {
-        m.commands?.forEach((c) => registry.register(c));
+        m.commands?.forEach((c) => commandRegistry.register(c));
+        m.buttons?.forEach((b) => componentRegistry.register(b));
+        m.stringSelects?.forEach((s) => componentRegistry.register(s));
+        m.userSelects?.forEach((s) => componentRegistry.register(s));
+        m.roleSelects?.forEach((s) => componentRegistry.register(s));
+        m.channelSelects?.forEach((s) => componentRegistry.register(s));
+        m.mentionableSelects?.forEach((s) => componentRegistry.register(s));
+        m.modals?.forEach((modal) => componentRegistry.register(modal));
+        m.autocomplete?.forEach((a) => autocompleteRegistry.register(a));
       }
 
       const client = createDiscordClient();
 
-      wireInteractionHandler(client, registry, ctx);
+      wireInteractionHandler(
+        client,
+        commandRegistry,
+        componentRegistry,
+        autocompleteRegistry,
+        ctx,
+      );
+
+      for (const m of modules) {
+        if (m.events) {
+          for (const { event, handler, once } of m.events) {
+            const wrappedHandler = (...args: any[]) =>
+              handler(ctx, ...args) as any;
+
+            if (once) {
+              client.once(event, wrappedHandler);
+            } else {
+              client.on(event, wrappedHandler);
+            }
+
+            ctx.logger.debug(
+              { module: m.name, event, once: !!once },
+              "registered discord event listener",
+            );
+          }
+        }
+      }
 
       await initModules(ctx, client, modules);
 
@@ -51,10 +89,14 @@ export const createApp = () => {
       });
 
       try {
-        await registerGuildCommands(registry, ctx);
+        await registerGuildCommands(commandRegistry, ctx);
         ctx.logger.info(
-          { count: registry.list().length },
-          "commands registered with Discord",
+          {
+            commands: commandRegistry.list().length,
+            components: componentRegistry.list().length,
+            autocomplete: autocompleteRegistry.list().length,
+          },
+          "handlers registered",
         );
       } catch (err) {
         ctx.logger.error({ err }, "failed to register commands");

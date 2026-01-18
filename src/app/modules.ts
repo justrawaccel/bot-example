@@ -3,8 +3,12 @@ import type { AppContext } from "./context";
 import type { Module } from "./types";
 
 import { createStaffModule } from "../modules/staff/staff.module";
+import { exampleModule } from "../modules/example/example.module";
 
-export const buildModules = (): Module[] => [createStaffModule()];
+export const buildModules = (): Module[] => [
+  createStaffModule(),
+  exampleModule,
+];
 
 export const initModules = async (
   ctx: AppContext,
