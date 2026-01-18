@@ -1,0 +1,19 @@
+[guild]
+id = "111111111111111111"
+
+[roles]
+admin = "111111111111111111"
+moderator = "222222222222222222"
+staff = ["222222222222222222", "333333333333333333"]
+
+[channels]
+logs = "444444444444444444"
+mod_actions = "555555555555555555"
+
+[staff]
+enable_ban = true
+enable_mute = true
+max_reason_length = 300
+
+[limits]
+staff_commands_per_minute = 20
