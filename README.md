@@ -10,7 +10,7 @@ Template for creating Discord bots in TypeScript, designed with scalability and 
 - **Database**: [PostgreSQL](https://www.postgresql.org/) with [MikroORM](https://mikro-orm.io/)
 - **Cache**: [Redis](https://redis.io/) via [ioredis](https://ioredis.com/)
 - **Logging**: [Pino](https://github.com/pinojs/pino)
-- **Configuration**: Environment variables + TOML for guild-specific settings
+- **Configuration**: [Environment variables](https://nodejs.org/docs/latest/api/environment_variables.html#env-files) + [TOML](https://toml.io/en/) for guild-specific settings
 - **Validation**: [Zod](https://zod.dev/)
 
 ## Contributing
