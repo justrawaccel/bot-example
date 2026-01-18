@@ -13,7 +13,7 @@ Template for creating Discord bots in TypeScript, designed with scalability and 
 - **Configuration**: [Environment variables](https://nodejs.org/docs/latest/api/environment_variables.html#env-files) + [TOML](https://toml.io/en/) for guild-specific settings
 - **Validation**: [Zod](https://zod.dev/)
 
-## Contributing
+## Contributing (published by Microsoft)
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
